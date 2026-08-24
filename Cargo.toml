@@ -1,0 +1,54 @@
+[package]
+name = "payments"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "A gateway-agnostic payments, cart, checkout and order engine with split payments, multi-tender, discounts, tax and refunds."
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["payments", "checkout", "stripe", "marketplace", "ecommerce"]
+categories = ["finance", "api-bindings"]
+
+[dependencies]
+async-trait = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde", "std"] }
+hex = "0.4"
+hmac = "0.12"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+subtle = "2"
+thiserror = "2"
+tracing = "0.1"
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[features]
+default = ["memory-store", "mock-gateway"]
+# In-memory reference implementation of every repository trait.
+memory-store = []
+# Deterministic in-process gateway used for tests, local dev and sandboxes.
+mock-gateway = []
+# Stripe adapter built on top of the transport-agnostic `HttpTransport` trait.
+stripe = []
+# PayPal (Orders v2) adapter built on top of `HttpTransport`.
+paypal = []
+full = ["memory-store", "mock-gateway", "stripe", "paypal"]
+
+[package.metadata.docs.rs]
+all-features = true
+
+[[example]]
+name = "single_shop"
+required-features = ["memory-store", "mock-gateway"]
+
+[[example]]
+name = "marketplace_split"
+required-features = ["memory-store", "mock-gateway"]
+
+[[example]]
+name = "multi_tender_refund"
+required-features = ["memory-store", "mock-gateway"]
